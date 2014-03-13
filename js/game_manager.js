@@ -1,8 +1,8 @@
 function GameManager(size, InputManager, Actuator, ScoreManager) {
   this.size         = size; // Size of the grid
-  this.inputManager = new InputManager;
   this.scoreManager = new ScoreManager;
   this.actuator     = new Actuator;
+  this.inputManager = new InputManager;
 
   this.startTiles   = 2;
 
@@ -31,6 +31,7 @@ GameManager.prototype.setup = function () {
 
   // Update the actuator
   this.actuate();
+  this.inputManager.passGrid(this.grid);
 };
 
 // Set up the initial tiles to start the game with
