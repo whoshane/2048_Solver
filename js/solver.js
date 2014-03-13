@@ -59,6 +59,8 @@ Solver.prototype.solve = function(){
         xtilecount += self.findMerges(pos, 0)//rows
         ytilecount += self.findMerges(pos, 1)//col
     }
+
+    self.checkNextIter();
     
     if (xtilecount == 0 && ytilecount == 0){
         return Math.floor((Math.random()*4));
@@ -71,8 +73,13 @@ Solver.prototype.solve = function(){
     }
 };
 
-Solver.prototype.checkNextIter(){
-}
+Solver.prototype.checkNextIter = function(){
+    next = cloneGrid(this.grid);
+    next.insertTile(new Tile({x:0, y:0}, 12));
+    alert(next.cellContent({x:0, y:0}).value);
+    alert(this.grid.cellContent({x:0, y:0}).value);
+   
+};
 
 Solver.prototype.findMerges = function(apos, dir){
     var self = this;
@@ -106,11 +113,15 @@ Solver.prototype.findMerges = function(apos, dir){
     return counter;
 };
 
-function clone(obj) {
-    var copy = obj.constructor();
-    for (var attr in obj) {
-        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
-    }  
+cloneGrid = function(grid) {
+    var copy = new Grid(grid.size);
+    for (var x = 0; x < grid.size; x++) {
+        for (var y = 0; y < grid.size; y++) {
+            if (grid.cellOccupied({x:x,y:y})){
+                copy.insertTile(grid.cellContent({x:x, y:y}));
+            }
+        }
+    }
     return copy;
-}
+};
 
