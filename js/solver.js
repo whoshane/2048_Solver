@@ -51,38 +51,60 @@ Solver.prototype.restart = function (event) {
   this.emit("restart");
 };
 
-Solver.prototype.solve = function(){
+Solver.prototype.mergeCount = function(grid){
     var self = this;
     var xtilecount = 0;
     var ytilecount = 0;
     for (var pos = 0; pos < 4; pos++){
-        xtilecount += self.findMerges(pos, 0, self.grid)//rows
-        ytilecount += self.findMerges(pos, 1, self.grid)//col
+        xtilecount += self.findMerges(pos, 0, grid)//rows
+        ytilecount += self.findMerges(pos, 1, grid)//col
+    }
+    return {x:xtilecount, y: ytilecount};
+}
+
+Solver.prototype.solve = function(){
+    var self = this;
+    var mergeCounter = self.mergeCount(self.grid);
+
+//    if (mergeCounter.x == 0 && mergeCounter.y == 0){
+//        return Math.floor((Math.random()*4));
+        //return self.MovableSpace();
+    var directions = null;
+    if (mergeCounter.x == mergeCounter.y){
+        var directions = [0, 1, 2, 3];
+    }else{
+       var VorH = (mergeCounter.x > mergeCounter.y)?0:1; 
+       var directions = [0 + VorH, 2+VorH];
     }
 
-    self.checkNextIter();
-    
-    if (xtilecount == 0 && ytilecount == 0){
-        return Math.floor((Math.random()*4));
-        //return self.MovableSpace();
-    }else if (xtilecount == ytilecount){
-        return Math.floor((Math.random()*4));
-    }else{
-       var dir = (xtilecount > ytilecount)?0:1; 
-       return Math.floor((Math.random()*2))*2 +dir;
-    }
+    var dirs =  self.checkNextIter(directions);
+    return dirs[Math.floor((Math.random()*dirs.length))];
 };
 
-Solver.prototype.checkNextIter = function(){
-    next = cloneGrid(this.grid);
-    moveTiles(0, next);
-    alert(next.cellContent({x:0, y:0}));
-    alert(this.grid.cellContent({x:0, y:0}));
-   
+Solver.prototype.checkNextIter = function(directions){
+    var self = this;
+    var adjacentTiles = [0,0,0,0];
+    directions.forEach(function(dir){
+        var next = cloneGrid(self.grid);
+        moveTiles(dir, next);
+        var mergeCounter = self.mergeCount(next);
+        adjacentTiles[dir] = Math.max(mergeCounter.x, mergeCounter.y);
+    });
+    var max = Math.max.apply(Math, adjacentTiles);
+    var dirs = [];
+    var counter = 0;
+    var next = 0;
+    while (counter < 3 && counter != -1){
+        counter = adjacentTiles.indexOf(max, next);  
+        if (directions.indexOf(counter) > -1){
+            dirs.push(counter);
+        }
+        next = counter + 1;
+    }
+    return dirs;
 };
 
 Solver.prototype.findMerges = function(apos, dir, grid){
-    var self = this;
     var counter = 0;
     var length = 1;
     var cellVal = null;
