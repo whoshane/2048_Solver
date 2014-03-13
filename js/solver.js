@@ -56,8 +56,8 @@ Solver.prototype.solve = function(){
     var xtilecount = 0;
     var ytilecount = 0;
     for (var pos = 0; pos < 4; pos++){
-        xtilecount += self.findMerges(pos, 0)//rows
-        ytilecount += self.findMerges(pos, 1)//col
+        xtilecount += self.findMerges(pos, 0, self.grid)//rows
+        ytilecount += self.findMerges(pos, 1, self.grid)//col
     }
 
     self.checkNextIter();
@@ -75,13 +75,13 @@ Solver.prototype.solve = function(){
 
 Solver.prototype.checkNextIter = function(){
     next = cloneGrid(this.grid);
-    next.insertTile(new Tile({x:0, y:0}, 12));
-    alert(next.cellContent({x:0, y:0}).value);
-    alert(this.grid.cellContent({x:0, y:0}).value);
+    moveTiles(0, next);
+    alert(next.cellContent({x:0, y:0}));
+    alert(this.grid.cellContent({x:0, y:0}));
    
 };
 
-Solver.prototype.findMerges = function(apos, dir){
+Solver.prototype.findMerges = function(apos, dir, grid){
     var self = this;
     var counter = 0;
     var length = 1;
@@ -97,7 +97,7 @@ Solver.prototype.findMerges = function(apos, dir){
     }
     
     cells.forEach(function(cell){
-        tile = self.grid.cellContent(cell);
+        tile = grid.cellContent(cell);
         if (tile){
             if (tile.value == cellVal){
                 length++;
@@ -118,10 +118,108 @@ cloneGrid = function(grid) {
     for (var x = 0; x < grid.size; x++) {
         for (var y = 0; y < grid.size; y++) {
             if (grid.cellOccupied({x:x,y:y})){
-                copy.insertTile(grid.cellContent({x:x, y:y}));
+                oldTile = grid.cellContent({x:x, y:y});
+                newTile = new Tile({x:oldTile.x, y:oldTile.y}, oldTile.value);
+                copy.insertTile(newTile);
             }
         }
     }
     return copy;
 };
 
+moveTiles = function (direction, grid) {
+  // 0: up, 1: right, 2:down, 3: left
+
+  var cell, tile;
+
+  var vector     = getVector(direction);
+  var traversals = buildTraversals(vector);
+
+  // Save the current tile positions and remove merger information
+  prepareTiles(grid);
+
+  // Traverse the grid in the right direction and move tiles
+  traversals.x.forEach(function (x) {
+    traversals.y.forEach(function (y) {
+      cell = { x: x, y: y };
+      tile = grid.cellContent(cell);
+
+      if (tile) {
+        var positions = findFarthestPosition(cell, vector,grid);
+        var next      = grid.cellContent(positions.next);
+
+        // Only one merger per row traversal?
+        if (next && next.value === tile.value && !next.mergedFrom) {
+          var merged = new Tile(positions.next, tile.value * 2);
+          merged.mergedFrom = [tile, next];
+
+          grid.insertTile(merged);
+          grid.removeTile(tile);
+
+          tile.updatePosition(positions.next);
+
+        }else{
+          moveTile(tile, positions.farthest, grid);
+        }
+      }
+    });
+  });
+};
+
+getVector = function (direction) {
+  // Vectors representing tile movement
+  var map = {
+    0: { x: 0,  y: -1 }, // up
+    1: { x: 1,  y: 0 },  // right
+    2: { x: 0,  y: 1 },  // down
+    3: { x: -1, y: 0 }   // left
+  };
+
+  return map[direction];
+};
+
+buildTraversals = function (vector) {
+  var traversals = { x: [], y: [] };
+
+  for (var pos = 0; pos < 4; pos++) {
+    traversals.x.push(pos);
+    traversals.y.push(pos);
+  }
+
+  // Always traverse from the farthest cell in the chosen direction
+  if (vector.x === 1) traversals.x = traversals.x.reverse();
+  if (vector.y === 1) traversals.y = traversals.y.reverse();
+
+  return traversals;
+};
+
+prepareTiles = function (grid) {
+  grid.eachCell(function (x, y, tile) {
+    if (tile) {
+      tile.mergedFrom = null;
+      tile.savePosition();
+    }
+  });
+};
+
+findFarthestPosition = function (cell, vector, grid) {
+  var previous;
+
+  // Progress towards the vector direction until an obstacle is found
+  do {
+    previous = cell;
+    cell     = { x: previous.x + vector.x, y: previous.y + vector.y };
+  } while (grid.withinBounds(cell) &&
+           grid.cellAvailable(cell));
+
+  return {
+    farthest: previous,
+    next: cell // Used to check if a merge is required
+  };
+};
+
+moveTile = function (tile, cell, grid) {
+  grid.cells[tile.x][tile.y] = null;
+  grid.cells[cell.x][cell.y] = tile;
+  tile.updatePosition(cell);
+};
