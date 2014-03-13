@@ -71,6 +71,9 @@ Solver.prototype.solve = function(){
     }
 };
 
+Solver.prototype.checkNextIter(){
+}
+
 Solver.prototype.findMerges = function(apos, dir){
     var self = this;
     var counter = 0;
@@ -102,3 +105,12 @@ Solver.prototype.findMerges = function(apos, dir){
     });
     return counter;
 };
+
+function clone(obj) {
+    var copy = obj.constructor();
+    for (var attr in obj) {
+        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+    }  
+    return copy;
+}
+
