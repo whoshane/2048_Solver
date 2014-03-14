@@ -55,20 +55,24 @@ Solver.prototype.mergeCount = function(grid){
     var self = this;
     var xtilecount = 0;
     var ytilecount = 0;
+    var xlarge = 0;
+    var ylarge = 0;
+
     for (var pos = 0; pos < 4; pos++){
-        xtilecount += self.findMerges(pos, 0, grid)//rows
-        ytilecount += self.findMerges(pos, 1, grid)//col
+        var xMerge = self.findMerges(pos, 0, grid)//rows
+        var yMerge = self.findMerges(pos, 1, grid)//rows
+        xtilecount += xMerge.tilesMerged
+        ytilecount += yMerge.tilesMerged
+        xlarge = (xMerge.largestTile > xlarge)?xMerge.largestTile:xlarge;
+        ylarge = (yMerge.largestTile > ylarge)?yMerge.largestTile:ylarge;
     }
-    return {x:xtilecount, y: ytilecount};
+    return {x:xtilecount, y: ytilecount, xlarge:xlarge, ylarge:ylarge};
 }
 
 Solver.prototype.solve = function(){
     var self = this;
     var mergeCounter = self.mergeCount(self.grid);
 
-//    if (mergeCounter.x == 0 && mergeCounter.y == 0){
-//        return Math.floor((Math.random()*4));
-        //return self.MovableSpace();
     var directions = null;
     if (mergeCounter.x == mergeCounter.y){
         var directions = [0, 1, 2, 3];
@@ -109,6 +113,7 @@ Solver.prototype.findMerges = function(apos, dir, grid){
     var length = 1;
     var cellVal = null;
     var cells = [];
+    var largestVal;
 
     for (var bpos = 0; bpos < 4; bpos ++){
         if (dir == 0){
@@ -125,6 +130,9 @@ Solver.prototype.findMerges = function(apos, dir, grid){
                 length++;
                 if (length%2 == 0){
                     counter++;
+                    if (cellVal > largestVal){
+                        largestVal = cellVal;
+                    }
                 } 
             }else{
                 length = 1;
@@ -132,7 +140,7 @@ Solver.prototype.findMerges = function(apos, dir, grid){
             }
         }
     });
-    return counter;
+    return {tilesMerged: counter, largestTile: largestVal};
 };
 
 cloneGrid = function(grid) {
