@@ -23,6 +23,6 @@ Added a closeness factor to the decision tree. The closeness factor is determine
 
 Seems to be able to consistently reach the 512 tile, but can't get over the next hump...
 
-High score: 11130 (1024 Tile)
+High score: 14016 (1024 Tile)
 
 
