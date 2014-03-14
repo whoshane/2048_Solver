@@ -10,3 +10,8 @@ High score: 6302
 ###Version 1.1
 Slightly improved algorithm. Instead of choosing directions randomly in the case of a tie, choose the direction which results in the largest number of merge opportunities for the next turn.
 High score: 12176
+
+###Version 1.2
+Prioritizing merge tile value over the number of cells merged. Logic behind it is that larger numbers are rarer, therefore less likely to be aligned for merging. Needs more testing to see which priorizitation produces better results.
+
+High score: 10456
