@@ -106,7 +106,7 @@ Solver.prototype.checkNextIter = function(directions){
 
     var dirs = dirsMaxVal.length > 1? 
         this.findDirection(maxNum, dirsMaxVal, adjacentTiles) : dirsMaxVal;
-    return dirs;
+    return (dirs.length == 0)?dirsMaxVal:dirs;
 };
 
 Solver.prototype.findDirection = function(max, bounds, list){
