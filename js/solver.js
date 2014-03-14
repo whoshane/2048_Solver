@@ -126,6 +126,7 @@ Solver.prototype.findDirection = function(max, bounds, list){
 Solver.prototype.findMerges = function(apos, dir, grid){
     var counter = 0;
     var length = 1;
+    var closeValues = 1;
     var cellVal = null;
     var cells = [];
     var largestVal = 0;
@@ -149,13 +150,16 @@ Solver.prototype.findMerges = function(apos, dir, grid){
                         largestVal = cellVal;
                     }
                 } 
-            }else{
+            }else {
+                if (tile.value == 2 * cellVal || cellVal = 2 * tiles.value)}
+                    closeValues++;
+                }
                 length = 1;
                 cellVal = tile.value;
             }
         }
     });
-    return {tilesMerged: counter, largestTile: largestVal};
+    return {tilesMerged: counter, largestTile: largestVal, closeValue: closeValues};
 };
 
 cloneGrid = function(grid) {
