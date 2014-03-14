@@ -74,11 +74,14 @@ Solver.prototype.solve = function(){
     var mergeCounter = self.mergeCount(self.grid);
 
     var directions = null;
-    if (mergeCounter.x == mergeCounter.y){
+    if (mergeCounter.xlarge != mergeCounter.ylarge){
+       var directions = (mergeCounter.xlarge > mergeCounter.ylarge)?
+          [0,2]:[1,3]; 
+    }else if (mergeCounter.x == mergeCounter.y){
         var directions = [0, 1, 2, 3];
     }else{
-       var VorH = (mergeCounter.x > mergeCounter.y)?0:1; 
-       var directions = [0 + VorH, 2+VorH];
+       var directions = (mergeCounter.x > mergeCounter.y)?
+          [0,2]:[1,3]; 
     }
 
     var dirs =  self.checkNextIter(directions);
@@ -113,7 +116,7 @@ Solver.prototype.findMerges = function(apos, dir, grid){
     var length = 1;
     var cellVal = null;
     var cells = [];
-    var largestVal;
+    var largestVal = 0;
 
     for (var bpos = 0; bpos < 4; bpos ++){
         if (dir == 0){
