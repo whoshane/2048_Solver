@@ -57,16 +57,21 @@ Solver.prototype.mergeCount = function(grid){
     var ytilecount = 0;
     var xlarge = 0;
     var ylarge = 0;
+    var xclose = 0;
+    var yclose = 0;
 
     for (var pos = 0; pos < 4; pos++){
         var xMerge = self.findMerges(pos, 0, grid)//rows
         var yMerge = self.findMerges(pos, 1, grid)//rows
         xtilecount += xMerge.tilesMerged
         ytilecount += yMerge.tilesMerged
+        xclose += xMerge.closeValue
+        yclose += yMerge.closeValue
         xlarge = (xMerge.largestTile > xlarge)?xMerge.largestTile:xlarge;
         ylarge = (yMerge.largestTile > ylarge)?yMerge.largestTile:ylarge;
     }
-    return {x:xtilecount, y: ytilecount, xlarge:xlarge, ylarge:ylarge};
+    return {x:xtilecount, y: ytilecount, xlarge:xlarge, ylarge:ylarge,
+            xclose:xclose, yclose:yclose};
 }
 
 Solver.prototype.solve = function(){
@@ -93,19 +98,25 @@ Solver.prototype.checkNextIter = function(directions){
     var self = this;
     var adjacentTiles = [0,0,0,0];
     var largestTile = [0,0,0,0];
+    var closeness = [0,0,0,0];
     directions.forEach(function(dir){
         var next = cloneGrid(self.grid);
         moveTiles(dir, next);
         var mergeCounter = self.mergeCount(next);
         adjacentTiles[dir] = Math.max(mergeCounter.x, mergeCounter.y);
         largestTile[dir] = Math.max(mergeCounter.xlarge, mergeCounter.ylarge);
+        closeness[dir] = Math.max(mergeCounter.xclose, mergeCounter.yclose);
     });
+    var maxCloseValue = Math.max.apply(Math, closeness);
     var maxNum = Math.max.apply(Math, adjacentTiles);
     var maxVal = Math.max.apply(Math, largestTile);
+    
     var dirsMaxVal = this.findDirection(maxVal, directions, largestTile);
 
     var dirs = dirsMaxVal.length > 1? 
         this.findDirection(maxNum, dirsMaxVal, adjacentTiles) : dirsMaxVal;
+    var dirs = dirs.length > 1?
+        this.findDirection(maxCloseValue, dirs, closeness):dirs;
     return (dirs.length == 0)?dirsMaxVal:dirs;
 };
 
