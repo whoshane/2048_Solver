@@ -8,5 +8,5 @@ Basic logic. For each direction, check how many tiles will be merged if moved in
 High score: 6302
 
 ###Version 1.1
-Slightly improved algorithm. Instead of choosing directions randomly in the case of a tie, choose the direction which results in the largest number of merge opportunities for the future.
+Slightly improved algorithm. Instead of choosing directions randomly in the case of a tie, choose the direction which results in the largest number of merge opportunities for the next turn.
 High score: 11788
