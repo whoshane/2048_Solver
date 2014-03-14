@@ -86,24 +86,36 @@ Solver.prototype.solve = function(){
 
     var dirs =  self.checkNextIter(directions);
     return dirs[Math.floor((Math.random()*dirs.length))];
+   
 };
 
 Solver.prototype.checkNextIter = function(directions){
     var self = this;
     var adjacentTiles = [0,0,0,0];
+    var largestTile = [0,0,0,0];
     directions.forEach(function(dir){
         var next = cloneGrid(self.grid);
         moveTiles(dir, next);
         var mergeCounter = self.mergeCount(next);
         adjacentTiles[dir] = Math.max(mergeCounter.x, mergeCounter.y);
+        largestTile[dir] = Math.max(mergeCounter.xlarge, mergeCounter.ylarge);
     });
-    var max = Math.max.apply(Math, adjacentTiles);
+    var maxNum = Math.max.apply(Math, adjacentTiles);
+    var maxVal = Math.max.apply(Math, largestTile);
+    var dirsMaxVal = this.findDirection(maxVal, directions, largestTile);
+
+    var dirs = dirsMaxVal.length > 1? 
+        this.findDirection(maxNum, dirsMaxVal, adjacentTiles) : dirsMaxVal;
+    return dirs;
+};
+
+Solver.prototype.findDirection = function(max, bounds, list){
     var dirs = [];
     var counter = 0;
     var next = 0;
     while (counter < 3 && counter != -1){
-        counter = adjacentTiles.indexOf(max, next);  
-        if (directions.indexOf(counter) > -1){
+        counter = list.indexOf(max, next);  
+        if (bounds.indexOf(counter) > -1){
             dirs.push(counter);
         }
         next = counter + 1;
