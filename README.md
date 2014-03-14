@@ -9,4 +9,4 @@ High score: 6302
 
 ###Version 1.1
 Slightly improved algorithm. Instead of choosing directions randomly in the case of a tie, choose the direction which results in the largest number of merge opportunities for the next turn.
-High score: 11788
+High score: 12176
