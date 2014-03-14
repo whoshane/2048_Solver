@@ -16,4 +16,13 @@ High score: 12176 (1024 Tile)
 ###Version 1.2
 Prioritizing merge tile value over the number of cells merged. Logic behind it is that larger numbers are rarer, therefore less likely to be aligned for merging. Needs more testing to see which priorizitation produces better results.
 
-High score: 12149 (1024 Tile)
+High score: 12148 (1024 Tile)
+
+###Version 1.3
+Added a closeness factor to the decision tree. The closeness factor is determined by the number of tiles which are within a factor of 2 from each other. Reasoning being that to chain a collection of merges, it's easier when a lower tier value is right next to its successor. I don't know if this even changes anything.
+
+Seems to be able to consistently reach the 512 tile, but can't get over the next hump...
+
+High score: 11130 (1024 Tile)
+
+
