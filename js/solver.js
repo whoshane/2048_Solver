@@ -151,7 +151,7 @@ Solver.prototype.findMerges = function(apos, dir, grid){
                     }
                 } 
             }else {
-                if (tile.value == 2 * cellVal || cellVal = 2 * tiles.value)}
+                if (tile.value == 2 * cellVal || cellVal == 2 * tile.value){
                     closeValues++;
                 }
                 length = 1;
